@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>DataTool</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <!-- 🔴 HEADER -->
+  <header class="header">
+    <div class="left">
+      <!-- Logo (pon tu archivo logo.png en la carpeta) -->
+      <img src="logo.png" alt="Logo" class="logo">
+    </div>
+      <h1>DataTool</h1>
+    <div class="right">
+      <!-- Toggle Dark Mode -->
+      <label class="switch">
+        <input type="checkbox" id="themeToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </header>
+
+  <!-- 📅 BODY -->
+  <main class="container">
+    <label>Select data range</label>
+
+    <div class="date-range">
+      <input type="date" id="startDate">
+      <span>→</span>
+      <input type="date" id="endDate">
+    </div>
+
+    <button id="startBtn">Start Processing</button>
+  </main>
+
+  <script src="popup.js"></script>
+</body>
+</html>

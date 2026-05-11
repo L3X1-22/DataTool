@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "DataTool",
+  "version": "v0-t",
+  "description": "Una herramienta poderosa que descarga datos en un rango de fechas establecido, normaliza los datos y genera analisis automaticamente en formato .csv",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://your-api-domain.com/*"
+  ]
+}

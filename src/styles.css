@@ -1,0 +1,176 @@
+/* 🌞 LIGHT MODE (default) */
+:root {
+  /* Brand */
+  --red: #e60000;
+  --red-dark: #b80000;
+  --red-light: #ff3333;
+
+  /* Backgrounds */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #eeeeee;
+
+  /* Text */
+  --text-primary: #1a1a1a;
+  --text-secondary: #555555;
+  --text-inverse: #ffffff;
+
+  /* Borders */
+  --border-color: #dddddd;
+
+  /* States */
+  --success: #28a745;
+  --warning: #ff9800;
+  --error: #d32f2f;
+
+  /* UI */
+  --button-primary-bg: var(--red);
+  --button-primary-text: #ffffff;
+  --button-primary-hover: var(--red-dark);
+
+  --input-bg: #ffffff;
+  --input-border: #cccccc;
+  --input-focus: var(--red);
+
+  /* Shadow */
+  --shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+
+/* 🌙 DARK MODE */
+[data-theme="dark"] {
+  /* Brand */
+  --red: #ff3b3b;
+  --red-dark: #cc0000;
+  --red-light: #ff6666;
+
+  /* Backgrounds */
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-tertiary: #2a2a2a;
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #bbbbbb;
+  --text-inverse: #000000;
+
+  /* Borders */
+  --border-color: #333333;
+
+  /* States */
+  --success: #4caf50;
+  --warning: #ffb74d;
+  --error: #ef5350;
+
+  /* UI */
+  --button-primary-bg: var(--red);
+  --button-primary-text: #ffffff;
+  --button-primary-hover: var(--red-dark);
+
+  --input-bg: #1e1e1e;
+  --input-border: #444444;
+  --input-focus: var(--red);
+
+  /* Shadow */
+  --shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+/* Layout */
+body {
+  margin: 0;
+  padding: 10px;
+  width: 300px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: Arial, sans-serif;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.header .left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  width: 28px;
+  height: 28px;
+}
+
+h1 {
+  font-size: 18px;
+  margin: 0;
+}
+
+/* Date inputs */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+input[type="date"] {
+  flex: 1;
+}
+
+/* Button */
+button {
+  margin-top: 10px;
+}
+
+/* Toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  background: var(--border-color);
+  border-radius: 20px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: 0.3s;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+input:checked + .slider {
+  background: var(--red);
+}
+
+input:checked + .slider::before {
+  transform: translateX(20px);
+}
