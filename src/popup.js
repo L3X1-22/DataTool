@@ -1,5 +1,3 @@
-import * as dfd from "https://cdn.jsdelivr.net/npm/danfojs@1.2.0/dist/danfojs.esm.min.js";
-
 /*
   Dark/light theme handler
 */
@@ -16,6 +14,21 @@ toggle.addEventListener("change", () => {
 /* 
   Functions to fetch, normalize and return data
 */
+
+async function downloadCSV() {
+  const df = await process();
+
+  const csv = Papa.unparse(df);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "resultado.csv";
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
 
 async function process() {
   let dates = [
@@ -40,14 +53,13 @@ async function process() {
   df = dataCleaning(df);
 
   // 4. Normalizar modelos
-  df.addColumn({
-    column: "Modelo",
-    value: df["Modelo"].values.map(val => {
-      const match = String(val).match(/\d+/);
+  df = df.map(row => ({
+    ...row,
+    Modelo: (() => {
+      const match = String(row.Modelo).match(/\d+/);
       return match ? match[0] : null;
-    }),
-    inplace: true
-  });
+    })()
+  }));
 
   // 5. Resultado final
   console.log(df);
@@ -130,25 +142,35 @@ async function fetchDateRange(dates) {
 }
 
 async function dataframesCreator(blobs) {
-  let dataframe = new dfd.DataFrame([]);
+  let dataframe = [];
 
   for (let i = 0; i < blobs.length; i++) {
     const text = await blobs[i].text();
-    const df = await dfd.readCSV(text);
+    const result = Papa.parse(text, { header: true, skipEmptyLines: true });
 
     if (i == 0) {
-      dataframe = df;
+      dataframe = result.data;
     } else {
-      dataframe = dfd.concat({
-        dfList: [dataframe, df],
-        axis: 0
-      });
+      dataframe = dataframe.concat(result.data);
     }
   }
 
   return dataframe;
 }
 
-function dataCleaning(df){
-  return df.drop({ columns: ["Serial", "Hostname", "Version",  "PE", "Interface en pe", "Last Login"]});
+function dataCleaning(df) {
+  const dropCols = ["Serial", "Hostname", "Version", "PE", "Interface en pe", "Last Login"];
+  return df.map(row => {
+    const clean = { ...row };
+    dropCols.forEach(col => delete clean[col]);
+    return clean;
+  });
 }
+
+const startBtn = document.getElementById("startBtn");
+
+function hello(){
+  console.log("hello")
+}
+
+startBtn.addEventListener("click", downloadCSV);
