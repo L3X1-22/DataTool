@@ -17,12 +17,42 @@ toggle.addEventListener("change", () => {
   Functions to fetch, normalize and return data
 */
 
-function process() {
-  let dates = [new Date(document.getElementById("startDate").value), endDate = new Date(document.getElementById("endDate").value)];
+async function process() {
+  let dates = [
+    new Date(document.getElementById("startDate").value),
+    endDate = new Date(document.getElementById("endDate").value)
+  ];
 
   dates = SortDates(dates);
 
-  console.log(dates[0].toISOString().split('T')[0], dates[1].toISOString().split('T')[0]);
+  console.log(
+    dates[0].toISOString().split('T')[0],
+    dates[1].toISOString().split('T')[0]
+  );
+
+  // 1. Fetch blobs (uno por día)
+  const blobs = await fetchDateRange(dates);
+
+  // 2. Crear DataFrame combinado
+  let df = await dataframesCreator(blobs);
+
+  // 3. Limpiar columnas innecesarias
+  df = dataCleaning(df);
+
+  // 4. Normalizar modelos
+  df.addColumn({
+    column: "Modelo",
+    value: df["Modelo"].values.map(val => {
+      const match = String(val).match(/\d+/);
+      return match ? match[0] : null;
+    }),
+    inplace: true
+  });
+
+  // 5. Resultado final
+  console.log(df);
+
+  return df;
 }
 
 function SortDates(dates) {
@@ -117,4 +147,8 @@ async function dataframesCreator(blobs) {
   }
 
   return dataframe;
+}
+
+function dataCleaning(df){
+  return df.drop({ columns: ["Serial", "Hostname", "Version",  "PE", "Interface en pe", "Last Login"]});
 }
