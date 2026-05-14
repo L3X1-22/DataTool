@@ -42,8 +42,10 @@ Create a file named `config.js` in the src directory:
 
 ```js
 export const API_URL = "YOUR_ENDPOINT_HERE";
+export const TEST_MODE = true;
 ```
-
+- `TEST_MODE = true` → Use a local CSV file (development mode, no VPN required)
+- `TEST_MODE = false` → Fetch data from the remote API (production mode)
 ---
 
 ### 2. Update `manifest.json`

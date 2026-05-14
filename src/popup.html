@@ -30,13 +30,15 @@
 
     <div class="date-range">
       <input type="date" id="date">
+      <input type="file" id="fileInput" accept=".csv" />
     </div>
 
     <button id="startBtn">Start Processing</button>
   </main>
 
   <script src="lib/papaparse.js"></script>
-  <script src="popup.js"></script>
+  <script src="config.js"></script>
+  <script type="module" src="popup.js"></script>
 </body>
 
 </html>

@@ -1,3 +1,5 @@
+import { API_URL, TEST_MODE } from "./config.js";
+
 /*
   Dark/light theme handler
 */
@@ -10,6 +12,16 @@ toggle.addEventListener("change", () => {
     document.documentElement.removeAttribute("data-theme");
   }
 });
+
+/* 
+  TestMode Handler
+*/
+
+if (TEST_MODE) {
+  document.getElementById("date").style.display = "none";
+} else {
+  document.getElementById("fileInput").style.display = "none";
+}
 
 /* 
   Functions to fetch, normalize and return data
@@ -31,31 +43,44 @@ async function downloadCSV() {
 }
 
 async function process() {
-  let date = new Date(document.getElementById("date").value);
+  let df;
 
-  console.log(date.toISOString().split('T')[0]);
+  if (TEST_MODE) {
+    // 👉 MODO TEST (archivo local)
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
 
-  // 1. Fetch blob
-  const blob = await fetchCSV(date.toISOString().split('T')[0]);
+    if (!file) {
+      alert("Sube un archivo CSV");
+      return;
+    }
 
-  // 2. Crear DataFrame combinado
-  let df = await dataframesCreator(blob);
+    df = await dataframesCreator(file);
+  } else {
+    // 👉 MODO REAL (fetch)
+    const input = document.getElementById("startDate").value;
 
-  // 3. Limpiar columnas innecesarias
+    if (!input) {
+      alert("Selecciona una fecha");
+      return;
+    }
+
+    let date = new Date(input);
+    const formattedDate = date.toISOString().split('T')[0];
+
+    const blob = await fetchCSV(formattedDate);
+    df = await dataframesCreator(blob);
+  }
+
+  // 🔽 pipeline común
   df = dataCleaning(df);
 
-  // 4. Normalizar modelos
   df = df.map(row => ({
     ...row,
-    Modelo: (() => {
-      const match = String(row.Modelo).match(/\d+/);
-      return match ? match[0] : null;
-    })()
+    Modelo: (String(row.Modelo ?? "").match(/[A-Z]*\d+[A-Z0-9-]*/i) || [null])[0]
   }));
 
-  // 5. Resultado final
   console.log(df);
-
   return df;
 }
 
