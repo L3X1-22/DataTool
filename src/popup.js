@@ -31,23 +31,15 @@ async function downloadCSV() {
 }
 
 async function process() {
-  let dates = [
-    new Date(document.getElementById("startDate").value),
-    endDate = new Date(document.getElementById("endDate").value)
-  ];
+  let date = new Date(document.getElementById("date").value);
 
-  dates = SortDates(dates);
+  console.log(date.toISOString().split('T')[0]);
 
-  console.log(
-    dates[0].toISOString().split('T')[0],
-    dates[1].toISOString().split('T')[0]
-  );
-
-  // 1. Fetch blobs (uno por día)
-  const blobs = await fetchDateRange(dates);
+  // 1. Fetch blob
+  const blob = await fetchCSV(date.toISOString().split('T')[0]);
 
   // 2. Crear DataFrame combinado
-  let df = await dataframesCreator(blobs);
+  let df = await dataframesCreator(blob);
 
   // 3. Limpiar columnas innecesarias
   df = dataCleaning(df);
@@ -65,15 +57,6 @@ async function process() {
   console.log(df);
 
   return df;
-}
-
-function SortDates(dates) {
-  if (dates[0] > dates[1]) {
-    let temp = dates[0];
-    dates[0] = dates[1];
-    dates[1] = temp;
-    return dates;
-  } return dates;
 }
 
 async function fetchCSV(date) {
@@ -126,34 +109,12 @@ async function fetchCSV(date) {
   return blob;
 }
 
-async function fetchDateRange(dates) {
-  const dataframes = [];
-  if (dates[0].getTime() == dates[1].getTime()) {
-    dataframes[0] = await fetchCSV(dates[0].toISOString().split('T')[0]);
-  } else {
-    let j = 0;
+async function dataframesCreator(blob) {
+  let dataframe;
 
-    for (let i = new Date(dates[0].getTime()); i <= dates[1]; i.setDate(i.getDate() + 1)) {
-      dataframes[j] = await fetchCSV(i.toISOString().split('T')[0]);
-      j++;
-    }
-  }
-  return dataframes;
-}
-
-async function dataframesCreator(blobs) {
-  let dataframe = [];
-
-  for (let i = 0; i < blobs.length; i++) {
-    const text = await blobs[i].text();
-    const result = Papa.parse(text, { header: true, skipEmptyLines: true });
-
-    if (i == 0) {
-      dataframe = result.data;
-    } else {
-      dataframe = dataframe.concat(result.data);
-    }
-  }
+  const text = await blob.text();
+  const result = Papa.parse(text, { header: true, skipEmptyLines: true });
+  dataframe = result.data;
 
   return dataframe;
 }
@@ -168,9 +129,5 @@ function dataCleaning(df) {
 }
 
 const startBtn = document.getElementById("startBtn");
-
-function hello(){
-  console.log("hello")
-}
 
 startBtn.addEventListener("click", downloadCSV);
