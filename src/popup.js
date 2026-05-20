@@ -58,7 +58,7 @@ async function process() {
     df = await dataframesCreator(file);
   } else {
     // 👉 MODO REAL (fetch)
-    const input = document.getElementById("startDate").value;
+    const input = document.getElementById("date").value;
 
     if (!input) {
       alert("Selecciona una fecha");
