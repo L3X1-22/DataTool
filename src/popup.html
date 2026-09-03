@@ -11,13 +11,12 @@
   <!-- 🔴 HEADER -->
   <header class="header">
     <div class="left">
-      <!-- Logo (pon tu archivo logo.png en la carpeta) -->
       <img src="logo.png" alt="Logo" class="logo">
     </div>
     <h1>DataTool</h1>
     <div class="right">
       <!-- Toggle Dark Mode -->
-      <label class="switch">
+      <label class="switch" title="Modo oscuro">
         <input type="checkbox" id="themeToggle">
         <span class="slider"></span>
       </label>
@@ -26,18 +25,76 @@
 
   <!-- 📅 BODY -->
   <main class="container">
-    <label>Select data range</label>
 
-    <div class="date-range">
-      <input type="date" id="date">
-      <input type="file" id="fileInput" accept=".csv" />
+    <!-- Switch: Modo local (decide si las celdas 1 y 2 hacen fetch o piden archivo) -->
+    <div class="section-group section-inline" id="localModeSection">
+      <label for="localModeToggle">Modo local</label>
+      <label class="switch" title="Modo local">
+        <input type="checkbox" id="localModeToggle">
+        <span class="slider"></span>
+      </label>
     </div>
 
-    <button id="startBtn">Start Processing</button>
+    <!-- Sección de Fecha (Peticiones automáticas) -->
+    <div class="section-group" id="dateSection">
+      <label for="date">Fecha de consulta (Fuentes automáticas):</label>
+      <input type="date" id="date">
+    </div>
+
+    <hr class="divider" />
+
+    <!-- 🔲 CUADRÍCULA 2x2 -->
+    <!-- data-mode="fetch"  -> celdas 1 y 2 muestran "Listo para hacer fetch" -->
+    <!-- data-mode="local"  -> celdas 1 y 2 muestran input de archivo        -->
+    <section class="grid-2x2" id="sourcesGrid" data-mode="fetch">
+
+      <!-- Celda 1: Fuente 1 (fetch o manual, según modo) -->
+      <div class="grid-cell" id="cell1" data-slot="1">
+        <div class="cell-content cell-fetch">
+          <span class="cell-icon">⚡</span>
+          <p>Listo para hacer fetch</p>
+        </div>
+        <div class="cell-content cell-upload">
+          <label for="fileSource1">Fuente 1 (CSV Manual)</label>
+          <input type="file" id="fileSource1" accept=".csv" class="file-input">
+        </div>
+      </div>
+
+      <!-- Celda 2: Fuente 2 (fetch o manual, según modo) -->
+      <div class="grid-cell" id="cell2" data-slot="2">
+        <div class="cell-content cell-fetch">
+          <span class="cell-icon">⚡</span>
+          <p>Listo para hacer fetch</p>
+        </div>
+        <div class="cell-content cell-upload">
+          <label for="fileSource2">Fuente 2 (CSV Manual)</label>
+          <input type="file" id="fileSource2" accept=".csv" class="file-input">
+        </div>
+      </div>
+
+      <!-- Celda 3: Fuente 3 (siempre manual) -->
+      <div class="grid-cell grid-cell-static" id="cell3" data-slot="3">
+        <div class="cell-content cell-upload">
+          <label for="fileSource3">Fuente 3 (CSV Manual)</label>
+          <input type="file" id="fileSource3" accept=".csv" class="file-input">
+        </div>
+      </div>
+
+      <!-- Celda 4: Fuente 4 (siempre manual) -->
+      <div class="grid-cell grid-cell-static" id="cell4" data-slot="4">
+        <div class="cell-content cell-upload">
+          <label for="fileSource4">Fuente 4 (CSV Manual)</label>
+          <input type="file" id="fileSource4" accept=".csv" class="file-input">
+        </div>
+      </div>
+
+    </section>
+
+    <button id="startBtn">Iniciar Procesamiento</button>
   </main>
 
+  <!-- Scripts -->
   <script src="lib/papaparse.js"></script>
-  <script src="config.js"></script>
   <script type="module" src="popup.js"></script>
 </body>
 

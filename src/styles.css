@@ -33,7 +33,7 @@
   --input-focus: var(--red);
 
   /* Shadow */
-  --shadow: 0 2px 6px rgba(0,0,0,0.1);
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -72,7 +72,7 @@
   --input-focus: var(--red);
 
   /* Shadow */
-  --shadow: 0 2px 6px rgba(0,0,0,0.5);
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 /* Layout */
@@ -126,9 +126,51 @@ input[type="date"] {
   flex: 1;
 }
 
+/* Sección genérica */
+.section-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.section-group label {
+  color: var(--text-secondary);
+}
+
+/* Sección tipo fila (usada por el switch de modo local) */
+.section-inline {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-inline label:first-child {
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 4px 0;
+}
+
 /* Button */
 button {
   margin-top: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: var(--button-primary-hover);
 }
 
 /* Toggle switch */
@@ -137,6 +179,7 @@ button {
   display: inline-block;
   width: 40px;
   height: 20px;
+  flex-shrink: 0;
 }
 
 .switch input {
@@ -167,10 +210,84 @@ button {
   transition: 0.3s;
 }
 
-input:checked + .slider {
+input:checked+.slider {
   background: var(--red);
 }
 
-input:checked + .slider::before {
+input:checked+.slider::before {
   transform: translateX(20px);
+}
+
+/* 🔲 CUADRÍCULA 2x2 DE FUENTES */
+.grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+}
+
+.grid-cell {
+  position: relative;
+  min-height: 80px;
+  border: 1px dashed var(--input-border);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Contenido interno de cada celda (fetch o upload) */
+.cell-content {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.cell-content p,
+.cell-content label {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.cell-icon {
+  font-size: 18px;
+}
+
+.file-input {
+  width: 100%;
+  font-size: 11px;
+  color: var(--text-primary);
+}
+
+/* Celdas 3 y 4: siempre son de subida manual */
+.grid-cell-static .cell-upload {
+  display: flex;
+}
+
+/* Celdas 1 y 2: alternan según el modo */
+
+/* Modo fetch (por defecto): se muestra "Listo para hacer fetch" */
+.grid-2x2[data-mode="fetch"] .grid-cell:not(.grid-cell-static) .cell-fetch {
+  display: flex;
+}
+
+.grid-2x2[data-mode="fetch"] .grid-cell:not(.grid-cell-static) .cell-upload {
+  display: none;
+}
+
+/* Modo local: se muestra el input de archivo */
+.grid-2x2[data-mode="local"] .grid-cell:not(.grid-cell-static) .cell-upload {
+  display: flex;
+}
+
+.grid-2x2[data-mode="local"] .grid-cell:not(.grid-cell-static) .cell-fetch {
+  display: none;
 }

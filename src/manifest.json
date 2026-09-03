@@ -1,16 +1,20 @@
 {
   "manifest_version": 3,
   "name": "DataTool",
-  "version": "0.1",
+  "version": "0.2",
   "description": "Una herramienta poderosa que descarga datos en un rango de fechas establecido, normaliza los datos y genera analisis automaticamente en formato .csv",
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": "logo.png"
+  },
+  "icons": {
+    "128": "logo.png"
   },
   "permissions": [
     "activeTab"
   ],
   "host_permissions": [
-    "https://your-api-domain.com/*"
+    "https://integrify.claro.net.co:8443/*"
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
