@@ -21,7 +21,7 @@ export async function runDataPipeline({ isTestMode, fileInput, dateInput }) {
     // --- 1. EXTRACCIÓN ---
     // Por ahora solo tenemos la fuente Integrify
     const rawIntegrify = await extractIntegrify({ isTestMode, file: fileInput, dateStr: formattedDate });
-    const rawElasticnet = await extractElasticnet({ isTestMode });
+    //const rawElasticnet = await extractElasticnet({ isTestMode });
 
     // Aquí se irán sumando:
     // const rawSource2 = await extractSource2(...);
@@ -30,13 +30,13 @@ export async function runDataPipeline({ isTestMode, fileInput, dateInput }) {
 
     // --- 2. PREPARACIÓN / LIMPIEZA INDIVIDUAL ---
     const cleanIntegrify = prepareIntegrify(rawIntegrify);
-    const cleanElasticnet = prepareElasticnet(rawElasticnet);
+    //const cleanElasticnet = prepareElasticnet(rawElasticnet);
     // const cleanSource2 = prepareSource2(rawSource2); ...
 
     // --- 3. CONSOLIDACIÓN ---
     const consolidatedData = [
         ...cleanIntegrify,
-        ...cleanElasticnet
+        //...cleanElasticnet
     ];
 
     // --- 4. EXPORTACIÓN A CSV ---
