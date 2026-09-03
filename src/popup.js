@@ -59,24 +59,6 @@ startBtn.addEventListener("click", async () => {
       return;
     }
 
-    // Validar Integrify si estamos en Modo Local
-    if (isTestMode && !file1) {
-      alert("Por favor selecciona el archivo CSV para Integrify.");
-      return;
-    }
-
-    // Validar Elasticnet (ZIP)
-    if (!file2) {
-      alert("Por favor selecciona el archivo ZIP para Elasticnet.");
-      return;
-    }
-
-    // Validar ImasterNCE (CSV)
-    if (!file4) {
-      alert("Por favor selecciona el archivo CSV para ImasterNCE.");
-      return;
-    }
-
     startBtn.disabled = true;
     startBtn.textContent = "Procesando...";
 
