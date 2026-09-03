@@ -1,5 +1,7 @@
 import { extractIntegrify } from "./extractors/integrifyExtractor.js";
+import { extractElasticnet } from "./extractors/elasticnetExtractor.js";
 import { prepareIntegrify } from "./cleaners/integrifyCleaner.js";
+import { prepareElasticnet } from "./cleaners/elasticnetCleaner.js";
 
 /**
  * Ejecuta el pipeline completo de procesamiento de datos.
