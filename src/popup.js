@@ -5,7 +5,6 @@ import { runDataPipeline } from "./pipeline.js";
 */
 const toggle = document.getElementById("themeToggle");
 
-// Al cargar, lee el estado guardado y aplícalo
 toggle.checked = localStorage.getItem("theme") === "dark";
 if (toggle.checked) document.documentElement.setAttribute("data-theme", "dark");
 
@@ -15,18 +14,23 @@ toggle.addEventListener("change", () => {
   } else {
     document.documentElement.removeAttribute("data-theme");
   }
-  // Guarda el nuevo estado
   localStorage.setItem("theme", toggle.checked ? "dark" : "light");
 });
 
 /*
-  Local mode handler (fetch <-> upload en celdas 1 y 2)
+  Local mode handler (Fetch <-> Upload en Celda 1)
 */
 const localModeToggle = document.getElementById("localModeToggle");
 const sourcesGrid = document.getElementById("sourcesGrid");
+const dateSection = document.getElementById("dateSection");
 
 localModeToggle.addEventListener("change", () => {
-  sourcesGrid.dataset.mode = localModeToggle.checked ? "local" : "fetch";
+  const isLocal = localModeToggle.checked;
+  sourcesGrid.dataset.mode = isLocal ? "local" : "fetch";
+
+  if (dateSection) {
+    dateSection.style.display = isLocal ? "none" : "block";
+  }
 });
 
 /* 
@@ -35,22 +39,41 @@ localModeToggle.addEventListener("change", () => {
 const startBtn = document.getElementById("startBtn");
 
 startBtn.addEventListener("click", async () => {
+  const isTestMode = localModeToggle.checked;
   const dateInputEl = document.getElementById("date");
 
+  const fileSource1El = document.getElementById("fileSource1");
+  const fileSource2El = document.getElementById("fileSource2");
   const fileSource3El = document.getElementById("fileSource3");
   const fileSource4El = document.getElementById("fileSource4");
 
-  const file3 = fileSource3El ? fileSource3El.files[0] : null;
-  const file4 = fileSource4El ? fileSource4El.files[0] : null;
+  const file1 = fileSource1El?.files?.[0] || null; // Integrify
+  const file2 = fileSource2El?.files?.[0] || null; // Elasticnet
+  const file3 = fileSource3El?.files?.[0] || null; // friendlyIoT
+  const file4 = fileSource4El?.files?.[0] || null; // ImasterNCE
 
   try {
-    if (!dateInputEl.value) {
-      alert("Por favor selecciona una fecha de consulta.");
+    // Validar fecha solo si Integrify se va a consultar por Fetch
+    if (!isTestMode && (!dateInputEl || !dateInputEl.value)) {
+      alert("Por favor selecciona una fecha de consulta para Integrify.");
       return;
     }
 
-    if (!file3 || !file4) {
-      alert("Debes cargar los archivos CSV requeridos para la Fuente 3 y la Fuente 4.");
+    // Validar Integrify si estamos en Modo Local
+    if (isTestMode && !file1) {
+      alert("Por favor selecciona el archivo CSV para Integrify.");
+      return;
+    }
+
+    // Validar Elasticnet (ZIP)
+    if (!file2) {
+      alert("Por favor selecciona el archivo ZIP para Elasticnet.");
+      return;
+    }
+
+    // Validar ImasterNCE (CSV)
+    if (!file4) {
+      alert("Por favor selecciona el archivo CSV para ImasterNCE.");
       return;
     }
 
@@ -58,9 +81,12 @@ startBtn.addEventListener("click", async () => {
     startBtn.textContent = "Procesando...";
 
     const totalRows = await runDataPipeline({
+      isTestMode,
       dateInput: dateInputEl ? dateInputEl.value : null,
-      fileSource3: file3,
-      fileSource4: file4
+      fileIntegrify: file1,
+      fileElasticnet: file2,
+      fileFriendlyIoT: file3,
+      fileImaster: file4
     });
 
     console.log(`Pipeline finalizado con éxito. Registros procesados: ${totalRows}`);

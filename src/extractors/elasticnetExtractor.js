@@ -1,81 +1,43 @@
 /**
- * Obtiene los datos crudos de ElasticNet/ZTE (ONU_QUERY), paginando hasta traer todo el dataset.
+ * Procesa un archivo ZIP subido manualmente para Elasticnet,
+ * descomprime los CSVs internos y los concatena en un solo array.
+ * 
  * @param {Object} options
- * @param {boolean} options.isTestMode
- * @returns {Promise<Array<Object>>}
+ * @param {File|null} options.file - Archivo ZIP seleccionado en el input
+ * @returns {Promise<Array<Object>>} Array consolidado con los registros de todos los CSVs
  */
-export async function extractElasticnet({ isTestMode }) {
-    if (isTestMode) {
-        // TODO: definir fuente local de prueba para Elasticnet (¿archivo? ¿mock fijo?)
-        throw new Error("Modo de prueba no implementado aún para Elasticnet.");
+export async function extractElasticnet({ file }) {
+    if (!file) {
+        throw new Error("Debe seleccionar el archivo ZIP de Elasticnet.");
     }
 
-    const pageSize = 5000;
-    let pageIndex = 1;
-    let allRecords = [];
-    let totalNum = Infinity;
+    // 1. Leer el archivo local como ArrayBuffer
+    const zipData = await file.arrayBuffer();
 
-    while (allRecords.length < totalNum) {
-        const page = await fetchOnuQueryPage({ pageIndex, pageSize });
-        totalNum = page.totalNum;
-        allRecords = allRecords.concat(page.table.records);
-        pageIndex++;
-    }
+    // 2. Cargar el ZIP con JSZip
+    const zip = await JSZip.loadAsync(zipData);
+    const combinedData = [];
 
-    return allRecords;
-}
+    // 3. Iterar por cada elemento dentro del ZIP
+    for (const relativePath of Object.keys(zip.files)) {
+        const zipEntry = zip.files[relativePath];
 
-/**
- * Petición HTTP directa al endpoint ONU_QUERY de ElasticNet
- */
-async function fetchOnuQueryPage({ pageIndex, pageSize }) {
-    const res = await fetch("https://100.123.27.183:28001/api/an-rm/v1/resource-query-statistics-wireline-an-resources/ONU_QUERY", {
-        method: "POST",
-        headers: {
-            "accept": "application/json, text/plain, */*",
-            "content-type": "application/json",
-            "forgerydefense": "86dc7779363fd9ba79b0dad103f263a76804f76d6385717709ccb882fdec663b",
-            "language-option": "en-US",
-            "timezoneinfo": "Default,America/Bogota,",
-            "x-requested-with": "XMLHttpRequest"
-        },
-        credentials: "include",
-        body: JSON.stringify({
-            info: {
-                function: "ONU_QUERY",
-                pageInfo: { paging: "YES", pageIndex, pageSize },
-                condition: {
-                    "@class": "com.zte.ums.ume.an.commonsh.resquerystats.query.onu.querystats.entity.OnuQueryCondition",
-                    locationPaths: [],
-                    neIds: [],
-                    neNames: [],
-                    onuName: "",
-                    onuDescription: "",
-                    onuConfiguredType: "",
-                    onuActualType: "F680V6.OP,F660",
-                    onuAdministrativeStatus: "UNSELECTED",
-                    onuUsedStatus: "UNSELECTED",
-                    onuOperationalStatus: [],
-                    onuStartingDate: "",
-                    onuEndingDate: "",
-                    vendorId: "",
-                    softwareVersion: "",
-                    onuProfile: "",
-                    onuServiceLevel: "",
-                    onuChipModel: "",
-                    onuManufactureDate: "",
-                    onuResourceAttribute1: "",
-                    onuResourceAttribute2: "",
-                    onuResourceAttribute3: "",
-                    onuProtectionGroupOnly: "NO",
-                    includeProtectionPONPortOnu: "YES",
-                    onuFiberLength: -1
-                }
+        // Procesar solo archivos con extensión .csv (ignorando carpetas y archivos ocultos)
+        if (!zipEntry.dir && relativePath.toLowerCase().endsWith(".csv")) {
+            const csvText = await zipEntry.async("string");
+
+            // Parsear el contenido del CSV
+            const parsed = Papa.parse(csvText, {
+                header: true,
+                skipEmptyLines: true,
+                dynamicTyping: true
+            });
+
+            if (parsed.data && parsed.data.length > 0) {
+                combinedData.push(...parsed.data);
             }
-        })
-    });
+        }
+    }
 
-    if (!res.ok) throw new Error(`Error HTTP al consultar Elasticnet: ${res.status}`);
-
-    return res.json();
+    return combinedData;
 }
